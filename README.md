@@ -6,23 +6,34 @@
 [![Twilio](https://img.shields.io/badge/Twilio-Voice%20TwiML-F22F46.svg?logo=twilio&logoColor=white)](https://www.twilio.com)
 [![Bitrix24](https://img.shields.io/badge/Bitrix24-REST%20API%20v2-2FC6F6.svg?logo=bitrix24&logoColor=white)](https://www.bitrix24.com)
 [![Open Source](https://img.shields.io/badge/NLP-Open%20Source%20First-green.svg)]()
+[![Watch Video Demo](https://img.shields.io/badge/Loom-Live%20Video%20Demo-625DF5.svg?logo=loom&logoColor=white)](https://www.loom.com/share/41921a55560b4d4fb12bc757952e0316)
 
 A production-grade, end-to-end AI voice telephony system that answers inbound telephone calls, executes a 3-question intake dialogue, transcribes caller speech, extracts structured lead information using open-source NLP, and automatically writes the record into **Bitrix24 CRM** via its REST API without human intervention.
 
 ---
 
+## 📺 Live Screencast Demo (Video Walkthrough)
+
+> **Watch the full end-to-end demonstration in action:**  
+> 🔗 **[Click here to watch the Loom Live Screen Recording](https://www.loom.com/share/41921a55560b4d4fb12bc757952e0316)**  
+> 
+> *Demonstrates: Inbound/outbound call dispatch, natural speech-to-text processing, dynamic LLM conversational turns, structured field extraction (Name, Company, Desired Service, Contact Channel), and real-time lead creation in Bitrix24 CRM via REST API.*
+
+---
+
 ## 📋 Table of Contents
-1. [Architecture & Journey Overview](#-architecture--journey-overview)
-2. [Key Capabilities & Open-Source Highlights](#-key-capabilities--open-source-highlights)
-3. [Tech Stack](#-tech-stack)
-4. [Bitrix24 Integration & Field Mapping](#-bitrix24-integration--field-mapping)
-5. [Quickstart: Local Development](#-quickstart-local-development)
-6. [Public Tunnel & Twilio Webhook Setup (Cloudflare Tunnel & ngrok)](#-public-tunnel--twilio-webhook-setup-cloudflare-tunnel--ngrok)
-7. [In-Browser Voice Call Simulator](#-in-browser-voice-call-simulator)
-8. [Automated Test Suite](#-automated-test-suite)
-9. [Docker & Production VPS Deployment](#-docker--production-vps-deployment)
-10. [Environment Variables Reference](#-environment-variables-reference)
-11. [Assessment Requirements Compliance Matrix](#-assessment-requirements-compliance-matrix)
+1. [Live Screencast Demo (Video Walkthrough)](#-live-screencast-demo-video-walkthrough)
+2. [Architecture & Journey Overview](#-architecture--journey-overview)
+3. [Key Capabilities & Open-Source Highlights](#-key-capabilities--open-source-highlights)
+4. [Tech Stack](#-tech-stack)
+5. [Bitrix24 Integration & Field Mapping](#-bitrix24-integration--field-mapping)
+6. [Quickstart: Docker Setup (Recommended ⭐)](#-quickstart-docker-setup-recommended-)
+7. [Alternative: Manual Local Development](#-alternative-manual-local-development)
+8. [Public Tunnel & Twilio Webhook Setup](#-public-tunnel--twilio-webhook-setup-cloudflare-tunnel--ngrok)
+9. [In-Browser Voice Call Simulator](#-in-browser-voice-call-simulator)
+10. [Automated Test Suite](#-automated-test-suite)
+11. [Environment Variables Reference](#-environment-variables-reference)
+12. [Assessment Requirements Compliance Matrix](#-assessment-requirements-compliance-matrix)
 
 ---
 
@@ -139,7 +150,58 @@ The agent pushes data to the Bitrix24 Inbound Webhook endpoint:
 
 ---
 
-## 🚀 Quickstart: Local Development
+## 🚀 Quickstart: Docker Setup (Recommended ⭐)
+
+The recommended and zero-friction way to run the entire project is using **Docker Compose**. It launches the complete production stack with a single command:
+- **FastAPI Telephony Backend** (Port `8000`)
+- **React Dashboard on Nginx** (Port `80`)
+- **Cloudflare Tunnel (`cloudflared`) Sidecar** that automatically establishes a public HTTPS tunnel and auto-wires its URL into the backend for Twilio callbacks.
+
+### 1. Prerequisites
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed and running.
+
+### 2. Configure Environment
+Ensure your environment file `backend/.env` exists. You can copy the template:
+```bash
+# Copy example configuration if starting fresh
+cp backend/.env.example backend/.env
+```
+Ensure your credentials are set in `backend/.env` (`TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_PHONE_NUMBER`, `OPENAI_API_KEY`, `BITRIX24_WEBHOOK_URL`).
+
+### 3. Build & Run Stack
+```bash
+docker-compose up --build -d
+```
+
+### 4. Verify & Open
+- **Web Dashboard**: **[http://localhost](http://localhost)**
+- **Backend API & Swagger Docs**: **[http://localhost:8000/docs](http://localhost:8000/docs)**
+- **Health Check**: **[http://localhost/api/health](http://localhost/api/health)**
+
+### 5. View Logs & Auto-Detected Public Tunnel URL
+```bash
+# Check container status
+docker-compose ps
+
+# View backend logs (shows auto-detected Cloudflare public URL)
+docker logs -f voice_agent_backend
+```
+In the backend logs, you will see:
+```text
+Detected Cloudflare public URL: https://<random-subdomain>.trycloudflare.com
+Starting FastAPI server with PUBLIC_BASE_URL=https://<random-subdomain>.trycloudflare.com
+```
+
+To stop all services:
+```bash
+docker-compose down
+```
+
+---
+
+## 💻 Alternative: Manual Local Development (Without Docker)
+
+If you prefer to run services individually without Docker:
 
 ### Prerequisites
 - Python 3.10+ (tested on Python 3.12)
@@ -165,7 +227,7 @@ pip install -r requirements.txt
 # Start backend server
 uvicorn backend.app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
-API Documentation will be available at: **http://localhost:8000/docs**
+API Documentation: **http://localhost:8000/docs**
 
 ### 2. Frontend Setup
 ```bash
@@ -178,7 +240,7 @@ npm install
 # Start Vite dev server
 npm run dev
 ```
-Dashboard will open at: **http://localhost:5173**
+Dashboard: **http://localhost:5173**
 
 ### 3. One-Click Launch (Windows)
 Double-click `start_all.bat` or run:
@@ -288,7 +350,7 @@ ngrok http 8000
 
 ### Testing Your Live Phone Call:
 1. **Inbound Call**: Dial your Twilio phone number directly from your mobile phone.
-2. **Outbound Call Trigger**: Open the React Dashboard (`http://localhost:5173`), enter your phone number under **"Dial Your Mobile Phone"**, and click **"Ring My Mobile Phone"**.
+2. **Outbound Call Trigger**: Open the React Dashboard (**`http://localhost`** when using Docker, or `http://localhost:5173` for Vite dev), enter your phone number under **"Dial Your Mobile Phone"**, and click **"Ring My Mobile Phone"**.
 3. Speak naturally to the AI bot as it dynamically asks questions based on what you say.
 4. Watch the dialogue stream live on the dashboard in chat format.
 5. When the call ends, verify the newly created lead in Bitrix24!
@@ -299,7 +361,7 @@ ngrok http 8000
 
 If you don't have a paid Twilio number handy during review, use the **Live Call Simulator** on the React dashboard:
 
-1. Open **http://localhost:5173**.
+1. Open **[http://localhost](http://localhost)** (or `http://localhost:5173` in local dev).
 2. Click **"Dial & Start Voice Call"**.
 3. The AI agent will speak Question 1 out loud through your speakers.
 4. You can:
@@ -379,3 +441,4 @@ docker-compose ps
 | **6. Real-time Dialogue in Chat Format on UI** | `ConversationChatView` displays live incoming speech turns with distinct AI and Caller message bubbles, speaking/listening pulses, and auto-scrolling. | ✅ **100% Covered** |
 | **7. Clean, well-commented source code** | Modular architecture across `api`, `services`, `models`, `schemas`, and `components` with comprehensive type hints. | ✅ **100% Covered** |
 | **8. Automated testing & documentation** | 12 automated unit and integration tests passing (`pytest`); complete setup instructions and Docker files. | ✅ **100% Covered** |
+| **9. Short screencast proving flow in action** | Live screen recording proving the end-to-end journey in action: [Watch Loom Screencast](https://www.loom.com/share/41921a55560b4d4fb12bc757952e0316). | ✅ **100% Covered** |
