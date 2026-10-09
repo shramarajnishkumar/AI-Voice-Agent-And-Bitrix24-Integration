@@ -16,7 +16,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy backend files into /app/backend to match python package pathing
 COPY . /app/backend
+RUN sed -i 's/\r$//' /app/backend/docker-entrypoint.sh && chmod +x /app/backend/docker-entrypoint.sh
 
 EXPOSE 8000
 
-CMD ["uvicorn", "backend.app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["/app/backend/docker-entrypoint.sh"]

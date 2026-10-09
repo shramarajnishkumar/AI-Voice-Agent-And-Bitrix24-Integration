@@ -103,7 +103,16 @@ export default function CallSimulator({ onCallCompleted }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ to_phone: mobileNumber.trim() }),
       });
-      const data = await res.json();
+      let data = {};
+      try {
+        data = await res.json();
+      } catch (parseErr) {
+        throw new Error(
+          res.ok
+            ? 'Invalid response format from server.'
+            : `Backend service error (HTTP ${res.status}${res.statusText ? ` - ${res.statusText}` : ''}). Check docker logs voice_agent_backend.`
+        );
+      }
 
       if (res.ok && data.success) {
         setPhoneCallSid(data.call_sid);

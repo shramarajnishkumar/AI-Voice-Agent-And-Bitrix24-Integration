@@ -208,7 +208,20 @@ Cloudflare Tunnel provides free, ultra-reliable HTTPS forwarding with no session
 - **Direct Binary**: [Cloudflare Tunnel Downloads](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/)
 
 #### 2. Start the Quick Tunnel:
-In a separate terminal, run:
+If you want the tunnel to start automatically in Docker with no manual terminal step, use the preconfigured compose stack:
+
+```bash
+docker-compose up --build -d
+```
+
+This starts:
+- the FastAPI backend on port `8000`
+- the React frontend on port `80`
+- a `cloudflared` sidecar that exposes the backend through a public HTTPS tunnel automatically
+
+The backend reads the Cloudflare tunnel URL from the `cloudflared` metrics endpoint and sets `PUBLIC_BASE_URL` automatically, so you do not need to run `cloudflared tunnel --url http://localhost:8000` manually.
+
+If you prefer to start the tunnel manually instead, run:
 ```bash
 cloudflared tunnel --url http://localhost:8000
 ```
