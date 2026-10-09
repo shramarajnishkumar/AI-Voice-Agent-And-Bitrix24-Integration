@@ -1,0 +1,29 @@
+I want to prove that a phone call can flow seamlessly into Bitrix24 without human intervention. The minimal-viable bot should answer an incoming call, ask two-to-three preset questions, understand the caller’s short-sentence replies (it needn’t cope with one-word grunts or long story-telling yet), pull out the key data, and write the result into my Bitrix24 via its REST API.
+
+Here’s the journey I need running end-to-end:
+1. Public phone number receives the call and hands it to the bot.
+2. Bot plays a text-to-speech greeting and questions.
+3. Caller responds; speech-to-text converts the audio.
+4. An NLP layer extracts structured fields such as “desired service”, “company name”, and “contact channel”.
+5. The JSON payload is pushed into Bitrix24 as a new lead (or whichever entity you feel is quickest to wire up for the demo).
+
+Stack is your choice—Twilio Voice, Asterisk, Dialogflow, Azure Speech, Whisper, or similar—as long as I can deploy it on a small VPS or cloud function and configure it with my Bitrix24 webhook. I’ll supply those credentials.
+
+Deliverables I expect:
+• Clean, well-commented source code in a Git repository
+• README with clear setup instructions and environment variables
+• Short screencast or a live test number that proves the flow in action
+
+Acceptance: I dial the number, speak short answers to the bot’s questions, and a populated record appears in Bitrix24. Once that works reliably, the milestone is complete.
+
+Skills Required
+AI Chatbot Development
+AI Development
+AI Voice Agents
+API Integration
+FastAPI
+Laravel
+PostgreSQL
+Python
+React.js
+REST API
